@@ -76,12 +76,12 @@
   <ItemGroup>
     <Reference Include="HPMSdkManaged_4_5.x64, Version=7.5.2.0, Culture=neutral, PublicKeyToken=b6b6ff16a70279a6, processorArchitecture=AMD64">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\HPMSdkManaged_4_5.x64.dll</HintPath>
+      <HintPath>References\HPMSdkManaged_4_5.x64.dll</HintPath>
       <Aliases>HPMSdkx64</Aliases>
     </Reference>
     <Reference Include="HPMSdkManaged_4_5.x86, Version=7.5.2.0, Culture=neutral, PublicKeyToken=b6b6ff16a70279a6, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\HPMSdkManaged_4_5.x86.dll</HintPath>
+      <HintPath>References\HPMSdkManaged_4_5.x86.dll</HintPath>
       <Aliases>HPMSdkx86</Aliases>
     </Reference>
     <Reference Include="System" />
