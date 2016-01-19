@@ -1,10 +1,16 @@
-﻿using System;
+﻿#if (PLATFORM_X64)
+extern alias HPMSdkx64;
+using HPMSdkx64::HPMSdk;
+#else
+extern alias HPMSdkx86;
+using HPMSdkx86::HPMSdk;
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using HPMSdk;
 
 namespace Hansoft.ObjectWrapper
 {
@@ -381,7 +387,8 @@ namespace Hansoft.ObjectWrapper
 
         private void CloneColumns(HPMUniqueID sourceProjectID, HPMUniqueID targetProjectID)
         {
-            Session.ProjectCustomColumnsSet(targetProjectID, Session.ProjectCustomColumnsGet(sourceProjectID));
+            //TODO: Session.ProjectCustomColumnsSet(targetProjectID, Session.ProjectCustomColumnsGet(sourceProjectID));
+            throw new NotImplementedException();
         }
 
         private void CloneReports(HPMUniqueID sourceProjectID, HPMUniqueID targetProjectID)
@@ -392,7 +399,8 @@ namespace Hansoft.ObjectWrapper
 
         private void ClonePresets(HPMUniqueID sourceProjectID, HPMUniqueID targetProjectID)
         {
-            Session.ProjectSetViewPresets(targetProjectID, Session.ProjectGetViewPresets(sourceProjectID));
+            //TODO: Session.ProjectSetViewPresets(targetProjectID, Session.ProjectGetViewPresets(sourceProjectID));
+            throw new NotImplementedException();
         }
 
         private void CloneWorkflows(HPMUniqueID sourceProjectID, HPMUniqueID targetProjectID)
