@@ -24,8 +24,8 @@ namespace Hansoft.ObjectWrapper
             return new Bug(uniqueID, uniqueTaskID);
         }
 
-        private Bug(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private Bug(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 
@@ -80,11 +80,11 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.BugPriority, Session.TaskGetBugPriority(UniqueTaskID), (int)Session.TaskGetBugPriority(UniqueTaskID));
+                return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.BugPriority, Session.TaskGetBugPriority(RefTaskID), (int)Session.TaskGetBugPriority(RefTaskID));
             }
             set
             {
-                if (Priority != value) Session.TaskSetBugPriority(UniqueTaskID, (EHPMTaskAgilePriorityCategory)value.Value);
+                if (Priority != value) Session.TaskSetBugPriority(RefTaskID, (EHPMTaskAgilePriorityCategory)value.Value);
             }
         }
 

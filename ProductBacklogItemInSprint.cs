@@ -25,8 +25,8 @@ namespace Hansoft.ObjectWrapper
             return new ProductBacklogItemInSprint(uniqueID, uniqueTaskID);
         }
 
-        private ProductBacklogItemInSprint(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private ProductBacklogItemInSprint(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
     }

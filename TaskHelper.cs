@@ -47,7 +47,7 @@ namespace Hansoft.ObjectWrapper
         internal static string AssignedAsString(Task task)
         {
             StringBuilder sb = new StringBuilder();
-            HPMTaskResourceAllocationResource[] allocations = SessionManager.Session.TaskGetResourceAllocation(task.UniqueTaskID).m_Resources;
+            HPMTaskResourceAllocationResource[] allocations = SessionManager.Session.TaskGetResourceAllocation(task.RefTaskID).m_Resources;
             for (int i = 0; i < allocations.Length; i += 1)
             {
                 HPMUniqueID resourceId = allocations[i].m_ResourceID;
@@ -75,7 +75,7 @@ namespace Hansoft.ObjectWrapper
 
         internal static Sprint GetCommittedToSprint(Task task) 
         {
-        HPMUniqueID uid = Session.TaskGetLinkedToSprint(task.UniqueTaskID);
+        HPMUniqueID uid = Session.TaskGetLinkedToSprint(task.RefTaskID);
         if (uid.m_ID != -1)
             return (Sprint) Task.GetTask(uid);
         else
@@ -85,7 +85,7 @@ namespace Hansoft.ObjectWrapper
         internal static List<User> GetAssignees(Task task)
         {
             List<User> assignees = new List<User>();
-            HPMTaskResourceAllocationResource[] allocations = Session.TaskGetResourceAllocation(task.UniqueTaskID).m_Resources;
+            HPMTaskResourceAllocationResource[] allocations = Session.TaskGetResourceAllocation(task.RefTaskID).m_Resources;
             foreach (HPMTaskResourceAllocationResource ra in allocations)
                 assignees.Add(User.GetUser(ra.m_ResourceID));
             return assignees;
@@ -93,7 +93,7 @@ namespace Hansoft.ObjectWrapper
 
         internal static int GetAssignmentPercentage(Task task, User user)
         {
-            HPMTaskResourceAllocationResource[] allocations = Session.TaskGetResourceAllocation(task.UniqueTaskID).m_Resources;
+            HPMTaskResourceAllocationResource[] allocations = Session.TaskGetResourceAllocation(task.RefTaskID).m_Resources;
             foreach (HPMTaskResourceAllocationResource ra in allocations)
                 if (ra.m_ResourceID.m_ID == user.UniqueID.m_ID)
                     return ra.m_PercentAllocated;
@@ -102,7 +102,7 @@ namespace Hansoft.ObjectWrapper
 
         internal static bool IsAssigned(Task task)
         {
-            HPMTaskResourceAllocationResource[] allocations = Session.TaskGetResourceAllocation(task.UniqueTaskID).m_Resources;
+            HPMTaskResourceAllocationResource[] allocations = Session.TaskGetResourceAllocation(task.RefTaskID).m_Resources;
             if (allocations.Length == 0)
                 return false;
             else

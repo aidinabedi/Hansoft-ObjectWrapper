@@ -23,8 +23,8 @@ namespace Hansoft.ObjectWrapper
             return new ProductBacklogItemInSchedule(uniqueID, uniqueTaskID);
         }
 
-        private ProductBacklogItemInSchedule(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private ProductBacklogItemInSchedule(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 
@@ -35,7 +35,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return Session.TaskGetDuration(UniqueTaskID);
+                return Session.TaskGetDuration(RefTaskID);
             }
         }
 

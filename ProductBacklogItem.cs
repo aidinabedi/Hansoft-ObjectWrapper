@@ -30,9 +30,9 @@ namespace Hansoft.ObjectWrapper
         /// General constructor
         /// </summary>
         /// <param name="uniqueID">The TaskRef ID of the item</param>
-        /// <param name="uniqueTaskID">The Task ID of the item</param>
-        internal ProductBacklogItem(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        /// <param name="refTaskID">The Task ID of the item</param>
+        internal ProductBacklogItem(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 
@@ -86,12 +86,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.BacklogPriority, Session.TaskGetBacklogPriority(UniqueTaskID), (int)Session.TaskGetBacklogPriority(UniqueTaskID));
+                return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.BacklogPriority, Session.TaskGetBacklogPriority(RefTaskID), (int)Session.TaskGetBacklogPriority(RefTaskID));
             }
             set
             {
                 if (Priority != value) 
-                    Session.TaskSetBacklogPriority(UniqueTaskID, (EHPMTaskAgilePriorityCategory)value.Value);
+                    Session.TaskSetBacklogPriority(RefTaskID, (EHPMTaskAgilePriorityCategory)value.Value);
             }
         }
 
@@ -116,7 +116,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMUniqueID proxyID = Session.TaskGetProxy(UniqueTaskID);
+                HPMUniqueID proxyID = Session.TaskGetProxy(RefTaskID);
                 if (proxyID.m_ID != -1 && proxyID.m_ID != UniqueID.m_ID)
                 {
                     // This is a bit of a hack to compensate for that TaskRefSummary in the SDK does not account
@@ -136,7 +136,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMUniqueID proxyID = Session.TaskGetProxy(UniqueTaskID);
+                HPMUniqueID proxyID = Session.TaskGetProxy(RefTaskID);
                 if (proxyID.m_ID == this.UniqueID.m_ID) // This is an item in the schedule and we will use the base implementation
                     return base.AggregatedPoints;
                 else if (proxyID.m_ID != -1) // If it is an item in the product backlog with a proxy we use the proxies summary, hence ignoring breakdown of committed items in the PBL
@@ -148,7 +148,7 @@ namespace Hansoft.ObjectWrapper
                     int aggregatedPoints = 0;
                     foreach (ProductBacklogItem item in DeepLeaves)
                     {
-                        proxyID = Session.TaskGetProxy(item.UniqueTaskID);
+                        proxyID = Session.TaskGetProxy(item.RefTaskID);
                         if (proxyID.m_ID != -1)
                             aggregatedPoints += Task.GetTask(proxyID).AggregatedPoints;
                         else
@@ -166,7 +166,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMUniqueID proxyID = Session.TaskGetProxy(UniqueTaskID);
+                HPMUniqueID proxyID = Session.TaskGetProxy(RefTaskID);
                 if (proxyID.m_ID == this.UniqueID.m_ID) // This is an item in the schedule and we will use the base implementation
                     return base.AggregatedWorkRemaining;
                 else if (proxyID.m_ID != -1) // If it is an item in the product backlog with a proxy we use the proxies summary, hence ignoring breakdown of committed items in the PBL
@@ -178,7 +178,7 @@ namespace Hansoft.ObjectWrapper
                     double aggregatedWorkRemaining = 0;
                     foreach (ProductBacklogItem item in DeepLeaves)
                     {
-                        proxyID = Session.TaskGetProxy(item.UniqueTaskID);
+                        proxyID = Session.TaskGetProxy(item.RefTaskID);
                         if (proxyID.m_ID != -1)
                             aggregatedWorkRemaining += Task.GetTask(proxyID).AggregatedWorkRemaining;
                         else
@@ -199,7 +199,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMUniqueID proxyID = Session.TaskGetProxy(UniqueTaskID);
+                HPMUniqueID proxyID = Session.TaskGetProxy(RefTaskID);
                 if (proxyID.m_ID == this.UniqueID.m_ID) // This is an item in the schedule and we will use the base implementation
                     return base.AggregatedEstimatedDays;
                 else if (proxyID.m_ID != -1) // If it is an item in the product backlog with a proxy we use the proxies summary, hence ignoring breakdown of committed items in the PBL
@@ -211,7 +211,7 @@ namespace Hansoft.ObjectWrapper
                     double aggregatedEstimatedDays = 0;
                     foreach (ProductBacklogItem item in DeepLeaves)
                     {
-                        proxyID = Session.TaskGetProxy(item.UniqueTaskID);
+                        proxyID = Session.TaskGetProxy(item.RefTaskID);
                         if (proxyID.m_ID != -1)
                             aggregatedEstimatedDays += Task.GetTask(proxyID).AggregatedEstimatedDays;
                         else
@@ -224,7 +224,7 @@ namespace Hansoft.ObjectWrapper
 
         internal override CustomColumnValue GetAggregatedCustomColumnValue(HPMProjectCustomColumnsColumn customColumn)
         {
-            HPMUniqueID proxyID = Session.TaskGetProxy(UniqueTaskID);
+            HPMUniqueID proxyID = Session.TaskGetProxy(RefTaskID);
             if (proxyID.m_ID == this.UniqueID.m_ID) // This is an item in the schedule and we will use the base implementation
                 return base.GetAggregatedCustomColumnValue(customColumn);
             else if (proxyID.m_ID != -1) // If it is an item in the product backlog with a proxy we use the proxies summary, hence ignoring breakdown of committed items in the PBL
@@ -238,7 +238,7 @@ namespace Hansoft.ObjectWrapper
                     long aggregatedInt = 0;
                     foreach (ProductBacklogItem item in DeepLeaves)
                     {
-                        proxyID = Session.TaskGetProxy(item.UniqueTaskID);
+                        proxyID = Session.TaskGetProxy(item.RefTaskID);
                         if (proxyID.m_ID != -1)
                             aggregatedInt += Task.GetTask(proxyID).GetAggregatedCustomColumnValue(customColumn).ToInt();
                         else
@@ -251,7 +251,7 @@ namespace Hansoft.ObjectWrapper
                     double aggregatedFloat = 0;
                     foreach (ProductBacklogItem item in DeepLeaves)
                     {
-                        proxyID = Session.TaskGetProxy(item.UniqueTaskID);
+                        proxyID = Session.TaskGetProxy(item.RefTaskID);
                         if (proxyID.m_ID != -1)
                             aggregatedFloat += Task.GetTask(proxyID).GetAggregatedCustomColumnValue(customColumn).ToDouble();
                         else
@@ -264,7 +264,7 @@ namespace Hansoft.ObjectWrapper
                     double aggregatedTime = 0;
                     foreach (ProductBacklogItem item in DeepLeaves)
                     {
-                        proxyID = Session.TaskGetProxy(item.UniqueTaskID);
+                        proxyID = Session.TaskGetProxy(item.RefTaskID);
                         if (proxyID.m_ID != -1)
                             aggregatedTime += Task.GetTask(proxyID).GetAggregatedCustomColumnValue(customColumn).ToDouble();
                         else

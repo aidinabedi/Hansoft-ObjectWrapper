@@ -426,7 +426,7 @@ namespace Hansoft.ObjectWrapper
                 if (newTask == null)
                     prevRefID.m_RefID = -1;
                 else
-                    prevRefID.m_RefID = newTask.UniqueTaskID;
+                    prevRefID.m_RefID = newTask.RefTaskID;
                 prevRefID.m_bLocalID = false;
 
                 HPMTaskCreateUnifiedReference prevWorkPrioRefID = new HPMTaskCreateUnifiedReference();
@@ -435,7 +435,7 @@ namespace Hansoft.ObjectWrapper
 
                 HPMTaskCreateUnifiedReference[] parentRefIds = new HPMTaskCreateUnifiedReference[1];
                 parentRefIds[0] = new HPMTaskCreateUnifiedReference();
-                parentRefIds[0].m_RefID = targetParent.Id; // This should be a taskref, which it should be
+                parentRefIds[0].m_RefID = targetParent.UniqueID; // This should be a taskref, which it should be
                 parentRefIds[0].m_bLocalID = false;
 
                 HPMTaskCreateUnified createTaskData = new HPMTaskCreateUnified();
@@ -447,8 +447,8 @@ namespace Hansoft.ObjectWrapper
                 createTaskData.m_Tasks[0].m_PreviousRefID = prevRefID;
                 createTaskData.m_Tasks[0].m_PreviousWorkPrioRefID = prevWorkPrioRefID;
                 createTaskData.m_Tasks[0].m_NonProxy_ReuseID = 0;
-                createTaskData.m_Tasks[0].m_TaskLockedType = Session.TaskGetLockedType(task.UniqueTaskID);
-                createTaskData.m_Tasks[0].m_TaskType = Session.TaskGetType(task.UniqueTaskID);
+                createTaskData.m_Tasks[0].m_TaskLockedType = Session.TaskGetLockedType(task.RefTaskID);
+                createTaskData.m_Tasks[0].m_TaskType = Session.TaskGetType(task.RefTaskID);
 
 
                 HPMChangeCallbackData_TaskCreateUnified createdData = Session.TaskCreateUnifiedBlock(targetProject.UniqueID, createTaskData);
@@ -467,7 +467,7 @@ namespace Hansoft.ObjectWrapper
                     newTask.Severity = task.Severity;
                     newTask.Status = task.Status;
                     newTask.WorkRemaining = task.WorkRemaining;
-                    Session.TaskSetFullyCreated(newTask.UniqueTaskID);
+                    Session.TaskSetFullyCreated(newTask.RefTaskID);
                     foreach (HPMProjectCustomColumnsColumn column in customColumns.m_ShowingColumns)
                         newTask.SetCustomColumnValue(column.m_Name, task.GetCustomColumnValue(column.m_Name));
                     CloneChildTasks(task, newTask, targetProject, customColumns);

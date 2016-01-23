@@ -24,8 +24,8 @@ namespace Hansoft.ObjectWrapper
             return new Sprint(uniqueID, uniqueTaskID);
         }
 
-        private Sprint(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private Sprint(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMTaskTimeZones tzData = Session.TaskGetTimeZones(UniqueTaskID);
+                HPMTaskTimeZones tzData = Session.TaskGetTimeZones(RefTaskID);
                 return HPMUtilities.FromHPMDateTime(tzData.m_Zones[0].m_Start);
             }
         }
@@ -59,7 +59,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMTaskTimeZones tzData = Session.TaskGetTimeZones(UniqueTaskID);
+                HPMTaskTimeZones tzData = Session.TaskGetTimeZones(RefTaskID);
                 return HPMUtilities.FromHPMDateTime(tzData.m_Zones[tzData.m_Zones.Length-1].m_End);
             }
         }

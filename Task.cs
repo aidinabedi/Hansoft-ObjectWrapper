@@ -23,7 +23,7 @@ namespace Hansoft.ObjectWrapper
     public abstract class Task : HansoftItem
     {
 
-        private HPMUniqueID uniqueTaskID;
+        private HPMUniqueID refTaskID;
 
         /// <summary>
         /// Factory method for creating a Task (subclass of).
@@ -56,62 +56,73 @@ namespace Hansoft.ObjectWrapper
 
         private static Task CreateTask(HPMUniqueID uniqueID)
         {
-            HPMUniqueID uniqueTaskID = SdkSession.TaskRefGetTask(uniqueID);
-            EHPMTaskLockedType lockedType = SdkSession.TaskGetLockedType(uniqueTaskID);
+            HPMUniqueID refTaskID = SdkSession.TaskRefGetTask(uniqueID);
+            EHPMTaskLockedType lockedType = SdkSession.TaskGetLockedType(refTaskID);
             switch (lockedType)
             {
                 case EHPMTaskLockedType.BacklogItem:
-                    if (SdkSession.UtilIsIDBacklogProject(SdkSession.TaskGetContainer(uniqueTaskID)))
+                    if (SdkSession.UtilIsIDBacklogProject(SdkSession.TaskGetContainer(refTaskID)))
                     {
-                        if (SdkSession.TaskGetMainReference(uniqueTaskID).m_ID == uniqueID.m_ID)
-                            return ProductBacklogItem.GetProductBacklogItem(uniqueID, uniqueTaskID);
+                        if (SdkSession.TaskGetMainReference(refTaskID).m_ID == uniqueID.m_ID)
+                            return ProductBacklogItem.GetProductBacklogItem(uniqueID, refTaskID);
                         else
-                            return ProductBacklogItemInSprint.GetProductBacklogItemInSprint(uniqueID, uniqueTaskID);
+                            return ProductBacklogItemInSprint.GetProductBacklogItemInSprint(uniqueID, refTaskID);
                     }
                     else
-                        return SprintBacklogItem.GetSprintBacklogItem(uniqueID, uniqueTaskID);
+                        return SprintBacklogItem.GetSprintBacklogItem(uniqueID, refTaskID);
                 case EHPMTaskLockedType.QABug:
-                    return Bug.GetBug(uniqueID, uniqueTaskID);
+                    return Bug.GetBug(uniqueID, refTaskID);
                 case EHPMTaskLockedType.SprintItem:
-                    return Sprint.GetSprint(uniqueID, uniqueTaskID);
+                    return Sprint.GetSprint(uniqueID, refTaskID);
                 case EHPMTaskLockedType.Normal:
                 default:
-                    if (SdkSession.TaskGetForceSubProject(uniqueTaskID))
+                    if (SdkSession.TaskGetForceSubProject(refTaskID))
                     {
-                        return SubProject.GetSubProject(uniqueID, uniqueTaskID);
+                        return SubProject.GetSubProject(uniqueID, refTaskID);
                     }
                     else
                     {
-                        EHPMTaskType taskType = SdkSession.TaskGetType(uniqueTaskID);
+                        EHPMTaskType taskType = SdkSession.TaskGetType(refTaskID);
                         switch (taskType)
                         {
                             case EHPMTaskType.Milestone:
-                                return Release.GetRelease(uniqueID, uniqueTaskID);
+                                return Release.GetRelease(uniqueID, refTaskID);
                             case EHPMTaskType.Planned:
                             default:
-                                if (SdkSession.UtilIsIDBacklogProject(SdkSession.TaskGetContainer(uniqueTaskID)))
-                                    return ProductBacklogItemInSchedule.GetProductBacklogItemInSchedule(uniqueID, uniqueTaskID);
+                                if (SdkSession.UtilIsIDBacklogProject(SdkSession.TaskGetContainer(refTaskID)))
+                                    return ProductBacklogItemInSchedule.GetProductBacklogItemInSchedule(uniqueID, refTaskID);
                                 else
-                                    return ScheduledTask.GetScheduledTask(uniqueID, uniqueTaskID);
+                                    return ScheduledTask.GetScheduledTask(uniqueID, refTaskID);
                         }
                     }
             }
         }
 
-        internal Task(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
+        internal Task(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
             : base(uniqueID)
         {
-            this.uniqueTaskID = uniqueTaskID;
+            this.refTaskID = refTaskID;
         }
 
         /// <summary>
         /// The Unique ID of the task.
         /// </summary>
-        public HPMUniqueID UniqueTaskID
+        public HPMUniqueID RefTaskID
         {
             get
             {
-                return uniqueTaskID;
+                return refTaskID;
+            }
+        }
+
+        /// <summary>
+        /// The local ID of a task can uniquely identify a task in a project. This identifier is the identifier presented in the UI.
+        /// </summary>
+        public int LocalTaskID
+        {
+            get
+            {
+                return Session.TaskGetID(refTaskID);
             }
         }
 
@@ -122,7 +133,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return Session.TaskGetContainer(UniqueTaskID);
+                return Session.TaskGetContainer(RefTaskID);
             }
         }
 
@@ -200,10 +211,10 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                string aString = Session.TaskGetDescription(UniqueTaskID);
+                string aString = Session.TaskGetDescription(RefTaskID);
                 return aString;
             }
-            set { if (Name != value) Session.TaskSetDescription(UniqueTaskID, value); }
+            set { if (Name != value) Session.TaskSetDescription(RefTaskID, value); }
         }
 
         /// <summary>
@@ -252,7 +263,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return HPMUtilities.FromHPMDateTime(Session.TaskGetLastUpdatedTime(UniqueTaskID));
+                return HPMUtilities.FromHPMDateTime(Session.TaskGetLastUpdatedTime(RefTaskID));
             }
         }
 
@@ -263,7 +274,7 @@ namespace Hansoft.ObjectWrapper
         /// <returns>true if this task is tagged to the release, false otherwise.</returns>
         public bool IsTaggedToRelease(Release release)
         {
-            HPMTaskLinkedToMilestones relIDs = Session.TaskGetLinkedToMilestones(UniqueTaskID);
+            HPMTaskLinkedToMilestones relIDs = Session.TaskGetLinkedToMilestones(RefTaskID);
             foreach (HPMUniqueID relID in relIDs.m_Milestones)
             {
                 if (relID.m_ID == release.UniqueID.m_ID)
@@ -280,7 +291,7 @@ namespace Hansoft.ObjectWrapper
             get
             {
                 List<Release> releases = new List<Release>();
-                HPMTaskLinkedToMilestones relIDs = Session.TaskGetLinkedToMilestones(UniqueTaskID);
+                HPMTaskLinkedToMilestones relIDs = Session.TaskGetLinkedToMilestones(RefTaskID);
                 foreach (HPMUniqueID relID in relIDs.m_Milestones)
                 {
                     if (Session.UtilIsIDValid(relID))
@@ -298,7 +309,7 @@ namespace Hansoft.ObjectWrapper
             get
             {
                 List<Task> linkedTasks = new List<Task>();
-                HPMTaskLinkedTo linked = Session.TaskGetLinkedTo(UniqueTaskID);
+                HPMTaskLinkedTo linked = Session.TaskGetLinkedTo(RefTaskID);
                 foreach (HPMTaskLinkedToLink linkedTask in linked.m_LinkedTo)
                 {
                     // Need to check that the TaskRef is valid since there might be dangling refs returned
@@ -316,12 +327,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                EHPMTaskRisk risk = Session.TaskGetRisk(UniqueTaskID);
+                EHPMTaskRisk risk = Session.TaskGetRisk(RefTaskID);
                 return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.Risk, risk, (int)risk);
             }
             set
             {
-                if (Risk != value) Session.TaskSetRisk(UniqueTaskID, (EHPMTaskRisk)value.Value);
+                if (Risk != value) Session.TaskSetRisk(RefTaskID, (EHPMTaskRisk)value.Value);
             }
         }
 
@@ -379,12 +390,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                EHPMTaskConfidence confidence = Session.TaskGetConfidence(UniqueTaskID);
+                EHPMTaskConfidence confidence = Session.TaskGetConfidence(RefTaskID);
                 return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.Confidence, confidence, (int)confidence);
             }
             set
             {
-                if (Confidence != value) Session.TaskSetConfidence(UniqueTaskID, (EHPMTaskConfidence)value.Value);
+                if (Confidence != value) Session.TaskSetConfidence(RefTaskID, (EHPMTaskConfidence)value.Value);
             }
         }
 
@@ -395,12 +406,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                EHPMTaskSeverity severity = Session.TaskGetSeverity(UniqueTaskID);
+                EHPMTaskSeverity severity = Session.TaskGetSeverity(RefTaskID);
                 return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.Severity, severity, (int)severity);
             }
             set
             {
-                if (Severity != value) Session.TaskSetSeverity(UniqueTaskID, (EHPMTaskSeverity)value.Value);
+                if (Severity != value) Session.TaskSetSeverity(RefTaskID, (EHPMTaskSeverity)value.Value);
             }
         }
 
@@ -411,12 +422,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                EHPMTaskBacklogCategory category = Session.TaskGetBacklogCategory(UniqueTaskID);
+                EHPMTaskBacklogCategory category = Session.TaskGetBacklogCategory(RefTaskID);
                 return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.BacklogCategory, category, (int)category);
             }
             set
             {
-                if (Category != value) Session.TaskSetBacklogCategory(UniqueTaskID, (EHPMTaskBacklogCategory)value.Value);
+                if (Category != value) Session.TaskSetBacklogCategory(RefTaskID, (EHPMTaskBacklogCategory)value.Value);
             }
         }
 
@@ -427,12 +438,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                EHPMTaskStatus status = Session.TaskGetStatus(UniqueTaskID);
+                EHPMTaskStatus status = Session.TaskGetStatus(RefTaskID);
                 return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.ItemStatus, status, (int)status);
             }
             set
             {
-                if (Status != value) Session.TaskSetStatus(UniqueTaskID, (EHPMTaskStatus)value.Value, true, EHPMTaskSetStatusFlag.All);
+                if (Status != value) Session.TaskSetStatus(RefTaskID, (EHPMTaskStatus)value.Value, true, EHPMTaskSetStatusFlag.None);
             }
         }
 
@@ -467,8 +478,8 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         public int Points
         {
-            get { return Session.TaskGetComplexityPoints(UniqueTaskID); }
-            set { if (Points != value) Session.TaskSetComplexityPoints(UniqueTaskID, value); }
+            get { return Session.TaskGetComplexityPoints(RefTaskID); }
+            set { if (Points != value) Session.TaskSetComplexityPoints(RefTaskID, value); }
         }
 
         /// <summary>
@@ -490,8 +501,8 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         public double WorkRemaining
         {
-            get { return Session.TaskGetWorkRemaining(UniqueTaskID); }
-            set { if (WorkRemaining != value) Session.TaskSetWorkRemaining(UniqueTaskID, (float)value); }
+            get { return Session.TaskGetWorkRemaining(RefTaskID); }
+            set { if (WorkRemaining != value) Session.TaskSetWorkRemaining(RefTaskID, (float)value); }
         }
 
         /// <summary>
@@ -519,8 +530,8 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         public double EstimatedDays
         {
-            get { return Session.TaskGetEstimatedIdealDays(UniqueTaskID); }
-            set { if (EstimatedDays != value) Session.TaskSetEstimatedIdealDays(UniqueTaskID, value); }
+            get { return Session.TaskGetEstimatedIdealDays(RefTaskID); }
+            set { if (EstimatedDays != value) Session.TaskSetEstimatedIdealDays(RefTaskID, value); }
         }
 
         /// <summary>
@@ -542,8 +553,8 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         public string Hyperlink
         {
-            get { return Session.TaskGetHyperlink(UniqueTaskID); }
-            set { if (Hyperlink != value) Session.TaskSetHyperlink(UniqueTaskID, value); }
+            get { return Session.TaskGetHyperlink(RefTaskID); }
+            set { if (Hyperlink != value) Session.TaskSetHyperlink(RefTaskID, value); }
         }
 
         /// <summary>
@@ -551,11 +562,26 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         public double PercentComplete
         {
-            get { return Session.TaskGetPercentComplete(UniqueTaskID); }
+            get { return Session.TaskGetPercentComplete(RefTaskID); }
         }
 
         /// <summary>
-        /// Gets the status of any attached workflow as a localized string.
+        /// The builtin Workflow ID.
+        /// </summary>
+        public int WorkflowID
+        {
+            get
+            {
+                return (int)Session.TaskGetWorkflow(RefTaskID);
+            }
+            set
+            {
+                Session.TaskSetWorkflow(RefTaskID, (uint)value);
+            }
+        }
+
+        /// <summary>
+        /// The status of any attached workflow as a localized string.
         /// 
         /// NOTE: There is no way to set what translation to user and the UK English localization will always be used.
         /// </summary>
@@ -563,10 +589,20 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                int workFlowID = (int)Session.TaskGetWorkflow(UniqueTaskID);
-                if (workFlowID == -1)
-                    return "";
+                int workFlowID = WorkflowID;
+                if (workFlowID == -1) throw new InvalidOperationException("No workflow is set.");
+
                 return Session.LocalizationTranslateString(Session.LocalizationGetDefaultLanguage(), Session.UtilGetWorkflowObjectName(MainProjectID, workFlowID, WorkflowStatus));
+            }
+            set
+            {
+                int workFlowID = WorkflowID;
+                if (workFlowID == -1) throw new InvalidOperationException("No workflow is set.");
+
+                int workflowStatus = Session.UtilGetWorkflowObjectIDFromName(MainProjectID, workFlowID, Session.LocalizationGetDefaultLanguage(), value);
+                if (workflowStatus == -1) throw new InvalidOperationException("Failed to get workflow status from string '" + value + "'.");
+
+                WorkflowStatus = workflowStatus;
             }
         }
 
@@ -579,19 +615,23 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                int workFlowID = (int)Session.TaskGetWorkflow(UniqueTaskID);
+                int workFlowID = (int)Session.TaskGetWorkflow(RefTaskID);
                 return workFlowID != -1;
             }
         }
 
         /// <summary>
-        /// Gets the status of any attached workflow as an integer.
+        /// The status of any attached workflow as an integer.
         /// </summary>
         public int WorkflowStatus
         {
             get
             {
-                return Session.TaskGetWorkflowStatus(UniqueTaskID);
+                return Session.TaskGetWorkflowStatus(RefTaskID);
+            }
+            set
+            {
+                Session.TaskSetWorkflowStatus(RefTaskID, value, EHPMTaskSetStatusFlag.None);
             }
         }
 
@@ -600,8 +640,8 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         public string DetailedDescription
         {
-            get { return Session.TaskGetDetailedDescription(UniqueTaskID); }
-            set { if (DetailedDescription != value) Session.TaskSetDetailedDescription(UniqueTaskID, value); }
+            get { return Session.TaskGetDetailedDescription(RefTaskID); }
+            set { if (DetailedDescription != value) Session.TaskSetDetailedDescription(RefTaskID, value); }
         }
 
         /// <summary>
@@ -616,14 +656,14 @@ namespace Hansoft.ObjectWrapper
         /// Get the value of a custom column for this task.
         /// </summary>
         /// <param name="columnName">The name of the column to get the value for</param>
-        /// <returns>The requested value wrapped by a subclass of CustomColumnValue</returns>
+        /// <returns>The requested value wrapped by a subclass of CustomColumnValue or null if failed</returns>
         public CustomColumnValue GetCustomColumnValue(string columnName)
         {
             HPMProjectCustomColumnsColumn customColumn = ProjectView.GetCustomColumn(columnName);
             if (customColumn != null)
                 return GetCustomColumnValue(customColumn);
-            else
-                return CustomColumnValue.FromInternalValue(this, null, "");
+
+            return null;
         }
 
         /// <summary>
@@ -637,7 +677,7 @@ namespace Hansoft.ObjectWrapper
             if (customColumn != null)
                 return GetAggregatedCustomColumnValue(customColumn);
             else
-                return CustomColumnValue.FromInternalValue(this, null, "");
+                return null;
         }
 
 
@@ -648,7 +688,7 @@ namespace Hansoft.ObjectWrapper
         /// <returns>The requested value wrapped by a subclass of CustomColumnValue</returns>
         public CustomColumnValue GetCustomColumnValue(HPMProjectCustomColumnsColumn customColumn)
         {
-            string cDataString = Session.TaskGetCustomColumnData(UniqueTaskID, customColumn.m_Hash);
+            string cDataString = Session.TaskGetCustomColumnData(RefTaskID, customColumn.m_Hash);
             return CustomColumnValue.FromInternalValue(this, customColumn, cDataString);
         }
 
@@ -718,20 +758,25 @@ namespace Hansoft.ObjectWrapper
         /// <param name="customColumnName">The name of the custom column to set the value for</param>
         /// <param name="value">The value to be set, can either be an instance of CustomColumnValue or any other type that can reasonably be converted
         /// to the end user consumable string representation of the value, i.e., as it is displayed in the Hansoft client.</param>
-        public void SetCustomColumnValue(string customColumnName, object value)
+        /// <returns>The return value indicates whether the custom column was found</returns>
+        public bool SetCustomColumnValue(string customColumnName, object value)
         {
             // Ensure that we get the custom column of the right project
             HPMProjectCustomColumnsColumn actualCustomColumn = ProjectView.GetCustomColumn(customColumnName);
             if (actualCustomColumn != null)
+            {
                 SetCustomColumnValue(actualCustomColumn, value);
+                return true;
+            }
+
+            return false;
         }
 
         private void SetCustomColumnValueInternal(HPMProjectCustomColumnsColumn customColumn, string value)
         {
-            if (Session.TaskGetCustomColumnData(UniqueTaskID, customColumn.m_Hash) != value)
-                Session.TaskSetCustomColumnData(UniqueTaskID, customColumn.m_Hash, value, true);
+            if (Session.TaskGetCustomColumnData(RefTaskID, customColumn.m_Hash) != value)
+                Session.TaskSetCustomColumnData(RefTaskID, customColumn.m_Hash, value, true);
         }
-
 
         /// <summary>
         /// Get the value of a built in column for this task.
@@ -762,6 +807,12 @@ namespace Hansoft.ObjectWrapper
                     return Name;
                 case EHPMProjectDefaultColumn.WorkRemaining:
                     return WorkRemaining;
+                case EHPMProjectDefaultColumn.DatabaseID:
+                    return UniqueID;
+                case EHPMProjectDefaultColumn.ID:
+                    return LocalTaskID;
+                case EHPMProjectDefaultColumn.WorkflowEnterByUser:
+                    return WorkflowStatusString;
                 default:
                     throw new ArgumentException("Unsupported default column in GetDefaultColumnValue/1: " + eHPMProjectDefaultColumn);
             }
@@ -806,9 +857,71 @@ namespace Hansoft.ObjectWrapper
                 case EHPMProjectDefaultColumn.WorkRemaining:
                     WorkRemaining = Convert.ToDouble(sourceValue, new System.Globalization.CultureInfo("en-US"));
                     break;
+                case EHPMProjectDefaultColumn.DatabaseID:
+                    throw new NotSupportedException("Can't change Database/Unique ID");
+                case EHPMProjectDefaultColumn.ID:
+                    throw new NotSupportedException("Can't change (Local) ID");
+                case EHPMProjectDefaultColumn.WorkflowEnterByUser:
+                    WorkflowStatusString = sourceValue.ToString();
+                    break;
                 default:
-                    throw new ArgumentException("Unsupported default column in GetDefaultColumnValue/1: " + eHPMProjectDefaultColumn);
+                    throw new ArgumentException("Unsupported default column in SetDefaultColumnValue/1: " + eHPMProjectDefaultColumn);
             }
+        }
+
+        /// <summary>
+        /// Get the <see cref="EHPMProjectDefaultColumn"/> enum value from a string representation.
+        /// </summary>
+        /// <param name="eHPMProjectDefaultColumn">The default column name.</param>
+        /// <returns>The corresponding <see cref="EHPMProjectDefaultColumn"/> value</returns>
+        public static EHPMProjectDefaultColumn GetDefaultColumnEnumFromName(string defaultColumnName)
+        {
+            switch (defaultColumnName)
+            {
+                case "Risk": return EHPMProjectDefaultColumn.Risk;
+                case "Bug priority": return EHPMProjectDefaultColumn.BacklogPriority;
+                case "Estimated days": return EHPMProjectDefaultColumn.EstimatedIdealDays;
+                case "Category": return EHPMProjectDefaultColumn.BacklogCategory;
+                case "Points": return EHPMProjectDefaultColumn.ComplexityPoints;
+                case "Status": return EHPMProjectDefaultColumn.ItemStatus;
+                case "Confidence": return EHPMProjectDefaultColumn.Confidence;
+                case "Hyperlink": return EHPMProjectDefaultColumn.Hyperlink;
+                case "Description": return EHPMProjectDefaultColumn.ItemName;
+                case "Work remaining": return EHPMProjectDefaultColumn.WorkRemaining;
+                case "Database ID": return EHPMProjectDefaultColumn.DatabaseID;
+                case "ID": return EHPMProjectDefaultColumn.ID;
+                case "Workflow status": return EHPMProjectDefaultColumn.WorkflowEnterByUser;
+                default:
+                    throw new ArgumentException("Unsupported default column in GetDefaultColumnEnumFromName/1: " + defaultColumnName);
+            }
+        }
+
+        /// <summary>
+        /// Sets the value of a custom or default column for this task.
+        /// </summary>
+        /// <param name="columnName">The name of the custom or default column to set the value for</param>
+        /// <param name="value">The value to be set, should be of a type that can reasonably be converted
+        /// to the end user consumable string representation of the value, i.e., as it is displayed in the Hansoft client.</param>
+        public void SetColumnValue(string columnName, object value)
+        {
+            if (SetCustomColumnValue(columnName, value)) return;
+
+            var defaultColumnEnum = GetDefaultColumnEnumFromName(columnName);
+            SetDefaultColumnValue(defaultColumnEnum, value);
+        }
+
+        /// <summary>
+        /// Get the value of a custom or default column for this task.
+        /// </summary>
+        /// <param name="columnName">The name of the custom or default column to get the value for</param>
+        /// <returns>The requested value can be of any type</returns>
+        public object GetColumnValue(string columnName)
+        {
+            var customColumnValue = GetCustomColumnValue(columnName);
+            if (customColumnValue != null) return customColumnValue.ToString();
+
+            var defaultColumnEnum = GetDefaultColumnEnumFromName(columnName);
+            return GetDefaultColumnValue(defaultColumnEnum);
         }
     }
 }
