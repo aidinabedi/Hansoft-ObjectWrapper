@@ -122,12 +122,12 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return Session.TaskGetID(refTaskID);
+                return Session.TaskGetID(RefTaskID);
             }
         }
 
         /// <summary>
-        /// The ID of the project (view) that the task belongs to can be eithe the Main Project, the Product Backlog Project, or the QA Project.
+        /// The ID of the project (view) that the task belongs to can be either the Main Project, the Product Backlog Project, or the QA Project.
         /// </summary>
         public HPMUniqueID ProjectID
         {
