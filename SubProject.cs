@@ -24,8 +24,8 @@ namespace Hansoft.ObjectWrapper
             return new SubProject(uniqueID, uniqueTaskID);
         }
 
-        private SubProject(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private SubProject(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 

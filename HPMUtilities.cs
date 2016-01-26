@@ -37,7 +37,7 @@ namespace Hansoft.ObjectWrapper
             foreach (ProductBacklogItem anItem in unsorted)
             {
                 if (anItem is ProductBacklogItemInSprint || anItem is ProductBacklogItemInSchedule)
-                    sorted.Add((ProductBacklogItem)Task.GetTask(anItem.Session.TaskGetMainReference(anItem.UniqueTaskID)));
+                    sorted.Add((ProductBacklogItem)Task.GetTask(anItem.Session.TaskGetMainReference(anItem.RefTaskID)));
                 else
                     sorted.Add(anItem);
             }

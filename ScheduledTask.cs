@@ -23,8 +23,8 @@ namespace Hansoft.ObjectWrapper
             return new ScheduledTask(uniqueID, uniqueTaskID);
         }
 
-        private ScheduledTask(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private ScheduledTask(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 
@@ -47,7 +47,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return Session.TaskGetDuration(UniqueTaskID);
+                return Session.TaskGetDuration(RefTaskID);
             }
         }
 

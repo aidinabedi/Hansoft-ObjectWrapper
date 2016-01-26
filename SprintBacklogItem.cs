@@ -24,8 +24,8 @@ namespace Hansoft.ObjectWrapper
             return new SprintBacklogItem(uniqueID, uniqueTaskID);
         }
 
-        private SprintBacklogItem(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private SprintBacklogItem(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
         }
 
@@ -68,11 +68,11 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.SprintPriority, Session.TaskGetSprintPriority(UniqueTaskID), (int)Session.TaskGetSprintPriority(UniqueTaskID));
+                return new HansoftEnumValue(MainProjectID, EHPMProjectDefaultColumn.SprintPriority, Session.TaskGetSprintPriority(RefTaskID), (int)Session.TaskGetSprintPriority(RefTaskID));
             }
             set
             {
-                if (Priority != value) Session.TaskSetSprintPriority(UniqueTaskID, (EHPMTaskAgilePriorityCategory)value.Value);
+                if (Priority != value) Session.TaskSetSprintPriority(RefTaskID, (EHPMTaskAgilePriorityCategory)value.Value);
             }
         }
     }

@@ -42,15 +42,15 @@ namespace Hansoft.ObjectWrapper
             return new Release(uniqueID, uniqueTaskID);
         }
 
-        private Release(HPMUniqueID uniqueID, HPMUniqueID uniqueTaskID)
-            : base(uniqueID, uniqueTaskID)
+        private Release(HPMUniqueID uniqueID, HPMUniqueID refTaskID)
+            : base(uniqueID, refTaskID)
         {
-            if (cachedData.ContainsKey(uniqueTaskID.m_ID))
-                cache = cachedData[uniqueTaskID.m_ID];
+            if (cachedData.ContainsKey(refTaskID.m_ID))
+                cache = cachedData[refTaskID.m_ID];
             else
             {
                 cache = new CachedData();
-                cachedData.Add(uniqueTaskID.m_ID, cache);
+                cachedData.Add(refTaskID.m_ID, cache);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Hansoft.ObjectWrapper
         {
             get
             {
-                HPMTaskTimeZones tzData = Session.TaskGetTimeZones(UniqueTaskID);
+                HPMTaskTimeZones tzData = Session.TaskGetTimeZones(RefTaskID);
                 return HPMUtilities.FromHPMDateTime(tzData.m_Zones[0].m_Start);
             }
             //TODO: Implement the setter.
@@ -727,7 +727,7 @@ namespace Hansoft.ObjectWrapper
                     bool found = false;
                     foreach (ProductBacklogItem cItem in completedItems)
                     {
-                        if (cItem.UniqueTaskID.m_ID == item.UniqueTaskID.m_ID)
+                        if (cItem.RefTaskID.m_ID == item.RefTaskID.m_ID)
                         {
                             found = true;
                             break;

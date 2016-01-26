@@ -38,17 +38,6 @@ namespace Hansoft.ObjectWrapper
         }
 
         /// <summary>
-        /// The unique id as an integer. 
-        /// </summary>
-        public int Id
-        {
-            get
-            {
-                return uniqueID.m_ID;
-            }
-        }
-
-        /// <summary>
         /// The name of the type of this instance
         /// </summary>
         public string TypeName
