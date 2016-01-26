@@ -74,44 +74,31 @@ namespace Hansoft.ObjectWrapper
         /// </summary>
         /// <param name="callbackHandler">Subclass of HPMSdkCallbacks that specifies your callback handlers</param>
         /// <param name="callbackSemaphore">Semaphore that will be Released/Signaled when you need to call SessionProcess to process callbacks</param>
-        /// <returns>True if the session could be created or one already exists, False otherwise.</returns>
-        public bool Connect(HPMSdkCallbacks callbackHandler, Semaphore callbackSemaphore)
+        public void Connect(HPMSdkCallbacks callbackHandler, Semaphore callbackSemaphore)
         {
             if (hpmSession == null)
             {
                 this.callbackHandler = callbackHandler;
                 this.callbackSemaphore = callbackSemaphore;
-                return Connect();
+                Connect();
             }
-            else
-                return true;
         }
 
         /// <summary>
         /// Connect to a Hansoft Server/Database with parameters specified in a preceding call to Intialize and
         /// create an Sdk session (retrieved through the Session property).
         /// </summary>
-        /// <returns>True if the session could be created, False otherwise.</returns>
-        public bool Connect()
+        public void Connect()
         {
-            try
-            {
-                hpmSession = HPMSdkSession.SessionOpen(server, port, database, sdkUser, sdkUserPwd, callbackHandler, callbackSemaphore, true, EHPMSdkDebugMode.Off, (IntPtr)null, 0, "", "", null);
-            }
-            catch (Exception e)
-            {
-                hpmSession = null;
-            }
-            return hpmSession != null;
+            hpmSession = HPMSdkSession.SessionOpen(server, port, database, sdkUser, sdkUserPwd, callbackHandler, callbackSemaphore, true, EHPMSdkDebugMode.Off, (IntPtr)null, 0, "", "", null);
         }
 
         /// <summary>
         /// Reconnect to the Hansoft Server/Database specified in earlier calls to Initialize and Connect.
         /// </summary>
-        /// <returns>True if the connection could be creates, False otherwise.</returns>
-        public bool Reconnect()
+        public void Reconnect()
         {
-            return Connect();
+            Connect();
         }
 
         /// <summary>
