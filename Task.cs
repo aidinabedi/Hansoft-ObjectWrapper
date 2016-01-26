@@ -805,6 +805,8 @@ namespace Hansoft.ObjectWrapper
                     return Hyperlink;
                 case EHPMProjectDefaultColumn.ItemName:
                     return Name;
+                case EHPMProjectDefaultColumn.DetailedDescription:
+                    return DetailedDescription;
                 case EHPMProjectDefaultColumn.WorkRemaining:
                     return WorkRemaining;
                 case EHPMProjectDefaultColumn.DatabaseID:
@@ -854,6 +856,9 @@ namespace Hansoft.ObjectWrapper
                 case EHPMProjectDefaultColumn.ItemName:
                     Name = sourceValue.ToString();
                     break;
+                case EHPMProjectDefaultColumn.DetailedDescription:
+                    DetailedDescription = sourceValue.ToString();
+                    break;
                 case EHPMProjectDefaultColumn.WorkRemaining:
                     WorkRemaining = Convert.ToDouble(sourceValue, new System.Globalization.CultureInfo("en-US"));
                     break;
@@ -887,6 +892,7 @@ namespace Hansoft.ObjectWrapper
                 case "Confidence": return EHPMProjectDefaultColumn.Confidence;
                 case "Hyperlink": return EHPMProjectDefaultColumn.Hyperlink;
                 case "Description": return EHPMProjectDefaultColumn.ItemName;
+                case "Detailed description": return EHPMProjectDefaultColumn.DetailedDescription;
                 case "Work remaining": return EHPMProjectDefaultColumn.WorkRemaining;
                 case "Database ID": return EHPMProjectDefaultColumn.DatabaseID;
                 case "ID": return EHPMProjectDefaultColumn.ID;
