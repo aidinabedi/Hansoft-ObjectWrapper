@@ -287,6 +287,10 @@ namespace Hansoft.ObjectWrapper
 
         #region Encoding/Decoding Droplist values
 
+        public static StringComparison DropListStringComparison { get; set; } = StringComparison.Ordinal;
+        public static StringSplitOptions DropListStringSplitOptions { get; set; } = StringSplitOptions.None;
+        public static char DropListStringSeparator { get; set; } = ';';
+
         internal static string DecodeDroplistValue(int iVal, HPMProjectCustomColumnsColumnDropListItem[] droplistItem)
         {
             for (int i = 0; i < droplistItem.Length; i += 1)
@@ -313,7 +317,6 @@ namespace Hansoft.ObjectWrapper
             return sb.ToString();
         }
 
-
         internal static IList DecodeDroplistValuesToStringList(int[] iVals, HPMProjectCustomColumnsColumnDropListItem[] droplistItem)
         {
             IList list = new List<string>();
@@ -327,11 +330,12 @@ namespace Hansoft.ObjectWrapper
             }
             return list;
         }
+
         internal static int EncodeDroplistValue(string sVal, HPMProjectCustomColumnsColumnDropListItem[] droplistItem)
         {
             for (int i = 0; i < droplistItem.Length; i += 1)
             {
-                if (droplistItem[i].m_Name == sVal)
+                if (droplistItem[i].m_Name.Equals(sVal, DropListStringComparison))
                     return (int)droplistItem[i].m_Id;
             }
             return -1;
@@ -340,11 +344,16 @@ namespace Hansoft.ObjectWrapper
 
         internal static int[] EncodeDroplistValues(string sVal, HPMProjectCustomColumnsColumnDropListItem[] droplistItem)
         {
-            string[] sVals = sVal.Split(new char[]{';'});
+            string[] sVals = SplitDroplistString(sVal);
             int[] iVals = new int[sVals.Length];
             for (int i=0; i<sVal.Length; i += 1)
                 iVals[i] = EncodeDroplistValue(sVals[i], droplistItem);
             return iVals;
+        }
+
+        internal static string[] SplitDroplistString(string sVal)
+        {
+            return sVal.Split(new[] { DropListStringSeparator }, DropListStringSplitOptions);
         }
 
         #endregion

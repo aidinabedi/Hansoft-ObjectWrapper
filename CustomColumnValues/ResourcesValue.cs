@@ -79,7 +79,7 @@ namespace Hansoft.ObjectWrapper.CustomColumnValues
         /// <returns>The string.</returns>
         public override string ToString()
         {
-            return ListUtils.ToString(new List<HansoftItem>(resources), ';');
+            return ListUtils.ToString(new List<HansoftItem>(resources));
         }
 
         /// <summary>

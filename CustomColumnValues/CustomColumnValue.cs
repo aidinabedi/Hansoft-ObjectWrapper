@@ -154,7 +154,7 @@ namespace Hansoft.ObjectWrapper.CustomColumnValues
                 case EHPMProjectCustomColumnsColumnType.Resources:
                     Project project = Project.GetProject(task.MainProjectID);
                     List<Resource> resources = new List<Resource>();
-                    string[] rStrings = endUserString.Split(new char[]{';'});
+                    string[] rStrings = HPMUtilities.SplitDroplistString(endUserString);
                     foreach (string rs in rStrings)
                     {
                         string trimmed = rs.Trim();
