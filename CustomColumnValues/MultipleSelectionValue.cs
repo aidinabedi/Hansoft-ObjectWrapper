@@ -21,11 +21,13 @@ namespace Hansoft.ObjectWrapper.CustomColumnValues
     /// </summary>
     public class MultipleSelectionValue : CustomColumnValue
     {
+        internal static readonly char[] separators = { ';' };
+
         private int[] selections;
 
         internal static new MultipleSelectionValue FromInternalValue(Task task, HPMProjectCustomColumnsColumn customColumn, string internalValue)
         {
-            string[] internalValues = internalValue.Split(new char[] {';'});
+            string[] internalValues = internalValue.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             int[] selections = new int[internalValues.Length];
             for (int i = 0; i < internalValues.Length; i += 1)
             {
@@ -38,7 +40,7 @@ namespace Hansoft.ObjectWrapper.CustomColumnValues
         internal static MultipleSelectionValue FromName(Task task, HPMProjectCustomColumnsColumn customColumn, string nameSequence)
         {
 
-            string[] names = nameSequence.Split(new char[]{';'});
+            string[] names = nameSequence.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             int[] selections = new int[names.Length];
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < names.Length; i += 1)
