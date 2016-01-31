@@ -310,7 +310,7 @@ namespace Hansoft.ObjectWrapper
                 if (sVal != string.Empty)
                 {
                     if (sb.Length > 0)
-                        sb.Append(";");
+                        sb.Append(DropListStringSeparator);
                     sb.Append(sVal);
                 }
             }
@@ -339,7 +339,6 @@ namespace Hansoft.ObjectWrapper
                     return (int)droplistItem[i].m_Id;
             }
             return -1;
-
         }
 
         internal static int[] EncodeDroplistValues(string sVal, HPMProjectCustomColumnsColumnDropListItem[] droplistItem)

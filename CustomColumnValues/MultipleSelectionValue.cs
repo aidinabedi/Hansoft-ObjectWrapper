@@ -45,7 +45,7 @@ namespace Hansoft.ObjectWrapper.CustomColumnValues
             {
                 selections[i] = HPMUtilities.EncodeDroplistValue(names[i], customColumn.m_DropListItems);
                 if (sb.Length > 0)
-                    sb.Append(';');
+                    sb.Append(HPMUtilities.DropListStringSeparator);
                 sb.Append(selections[i].ToString());
             }
             string internalValue = sb.ToString();
@@ -61,7 +61,7 @@ namespace Hansoft.ObjectWrapper.CustomColumnValues
             {
                 selections[i] = HPMUtilities.EncodeDroplistValue((string)names[i], customColumn.m_DropListItems);
                 if (sb.Length > 0)
-                    sb.Append(';');
+                    sb.Append(HPMUtilities.DropListStringSeparator);
                 sb.Append(selections[i].ToString());
             }
             string internalValue = sb.ToString();
