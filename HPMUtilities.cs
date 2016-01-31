@@ -290,6 +290,7 @@ namespace Hansoft.ObjectWrapper
         public static StringComparison DropListStringComparison { get; set; } = StringComparison.Ordinal;
         public static StringSplitOptions DropListStringSplitOptions { get; set; } = StringSplitOptions.None;
         public static char DropListStringSeparator { get; set; } = ';';
+        public static string DropListEncodeMissingString { get; set; } = string.Empty;
 
         internal static string DecodeDroplistValue(int iVal, HPMProjectCustomColumnsColumnDropListItem[] droplistItem)
         {
@@ -338,6 +339,8 @@ namespace Hansoft.ObjectWrapper
                 if (droplistItem[i].m_Name.Equals(sVal, DropListStringComparison))
                     return (int)droplistItem[i].m_Id;
             }
+            if (!string.IsNullOrEmpty(DropListEncodeMissingString) && sVal != DropListEncodeMissingString)
+                return EncodeDroplistValue(DropListEncodeMissingString, droplistItem);
             return -1;
         }
 
