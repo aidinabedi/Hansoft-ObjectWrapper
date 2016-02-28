@@ -318,12 +318,23 @@ namespace Hansoft.ObjectWrapper
                 }
                 return linkedTasks;
             }
-        }
+		}
 
-        /// <summary>
-        /// The builtin column Risk.
-        /// </summary>
-        public HansoftEnumValue Risk
+		/// <summary>
+		/// The tasks that are linked to this task.
+		/// </summary>
+		public string LinkedTasksString
+		{
+			get
+			{
+				return ListUtils.ToString(LinkedTasks);
+			}
+		}
+
+		/// <summary>
+		/// The builtin column Risk.
+		/// </summary>
+		public HansoftEnumValue Risk
         {
             get
             {
@@ -815,7 +826,9 @@ namespace Hansoft.ObjectWrapper
                     return LocalTaskID;
                 case EHPMProjectDefaultColumn.WorkflowEnterByUser:
                     return WorkflowStatusString;
-                default:
+				case EHPMProjectDefaultColumn.LinkedTo:
+		            return LinkedTasksString;
+				default:
                     throw new ArgumentException("Unsupported default column in GetDefaultColumnValue/1: " + eHPMProjectDefaultColumn);
             }
         }
@@ -869,7 +882,9 @@ namespace Hansoft.ObjectWrapper
                 case EHPMProjectDefaultColumn.WorkflowEnterByUser:
                     WorkflowStatusString = sourceValue.ToString();
                     break;
-                default:
+				case EHPMProjectDefaultColumn.LinkedTo:
+					throw new NotSupportedException("Can't change Linked to item");
+				default:
                     throw new ArgumentException("Unsupported default column in SetDefaultColumnValue/1: " + eHPMProjectDefaultColumn);
             }
         }
@@ -897,7 +912,8 @@ namespace Hansoft.ObjectWrapper
                 case "Database ID": return EHPMProjectDefaultColumn.DatabaseID;
                 case "ID": return EHPMProjectDefaultColumn.ID;
                 case "Workflow status": return EHPMProjectDefaultColumn.WorkflowEnterByUser;
-                default:
+				case "Linked to item": return EHPMProjectDefaultColumn.LinkedTo;
+				default:
                     throw new ArgumentException("Unsupported default column in GetDefaultColumnEnumFromName/1: " + defaultColumnName);
             }
         }
